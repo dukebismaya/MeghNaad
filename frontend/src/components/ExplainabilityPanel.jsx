@@ -53,27 +53,27 @@ export default function ExplainabilityPanel({ xaiData, mlData }) {
   if (!xaiData) return null;
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+    <div className="glass-card p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Layers className="w-5 h-5 text-violet-400" />
-        <h3 className="text-sm font-bold text-slate-200 uppercase tracking-widest">Model Explainability</h3>
+        <Layers className="w-5 h-5 text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+        <h3 className="text-sm font-bold text-gray-200 uppercase tracking-widest">Model Explainability</h3>
       </div>
       
       {isDemo ? (
-        <div className="aspect-square bg-slate-950 flex flex-col items-center justify-center border border-slate-800 rounded-lg text-slate-500 text-sm">
+        <div className="aspect-square bg-black/50 flex flex-col items-center justify-center border border-white/5 rounded-lg text-gray-500 text-sm shadow-inner">
           <Layers className="w-8 h-8 mb-2 opacity-50" />
           <p>Awaiting model inference</p>
           <p className="text-xs mt-1">XAI unavailable in DEMO MODE</p>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="relative aspect-square bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+          <div className="relative aspect-square bg-black rounded-lg overflow-hidden border border-white/10 shadow-[0_0_20px_rgba(244,63,94,0.1)]">
             <canvas ref={canvasRef} className="w-full h-full object-cover" />
-            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono text-slate-300">
+            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-mono text-gray-300">
               Grad-CAM
             </div>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-gray-400 leading-relaxed">
             Highlighted regions indicate INSAT-3D image features contributing most strongly to the model prediction.
           </p>
         </div>

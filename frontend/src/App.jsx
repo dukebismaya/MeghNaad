@@ -57,17 +57,19 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-950 text-cyan-400 font-sans">
-        <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
-        <p className="text-sm font-bold tracking-widest uppercase animate-pulse">Loading Cyclone Intelligence...</p>
+      <div className="h-screen w-screen flex flex-col items-center justify-center text-red-500 font-sans relative">
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-xl z-[-1]" />
+        <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin mb-4"></div>
+        <p className="text-sm font-black tracking-widest uppercase animate-pulse">Loading MeghNaad AI...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-950 text-red-400 font-sans p-6 text-center">
-        <div className="bg-red-500/10 border border-red-500/30 p-8 rounded-2xl max-w-md">
+      <div className="h-screen w-screen flex flex-col items-center justify-center text-red-400 font-sans p-6 text-center relative">
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-xl z-[-1]" />
+        <div className="glass p-8 rounded-2xl max-w-md border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.2)]">
           <p className="text-xl font-bold tracking-wider mb-2">SYSTEM ERROR</p>
           <p className="text-slate-400">{error}</p>
         </div>
@@ -78,12 +80,12 @@ export default function App() {
   const currentLegacyCyclone = activeCyclones[selectedCycloneIdx];
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 font-sans overflow-hidden">
+    <div className="h-screen w-screen flex flex-col font-sans overflow-hidden bg-transparent text-gray-200">
       <Header apiStatus="online" mlStatus={mlStatus || mlPrediction} />
       
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* Left Sidebar */}
-        <aside className="w-[400px] shrink-0 border-r border-slate-800/60 bg-slate-950/80 backdrop-blur-md flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
+        <aside className="w-[400px] shrink-0 glass border-r-0 flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
           <CycloneSummary mlData={mlPrediction} activeCyclone={currentLegacyCyclone} />
           <div className="mt-6 flex-1 min-h-[300px]">
             <IntensityChart mlData={mlPrediction} historicalData={currentLegacyCyclone?.track} />
@@ -96,7 +98,7 @@ export default function App() {
         </main>
 
         {/* Right Sidebar */}
-        <aside className="w-[420px] shrink-0 border-l border-slate-800/60 bg-slate-950/80 backdrop-blur-md flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
+        <aside className="w-[420px] shrink-0 glass border-l-0 flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
           <ForecastPanel mlData={mlPrediction} />
           <SatellitePanel mlStatus={mlStatus || mlPrediction} />
           <div className="my-4">

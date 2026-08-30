@@ -17,14 +17,14 @@ export default function ForecastPanel({ mlData }) {
   };
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 mb-4">
+    <div className="glass-card p-4 mb-4">
       <div className="flex items-center gap-2 mb-4">
-        <Clock className="w-5 h-5 text-amber-400" />
-        <h3 className="text-sm font-bold text-slate-200 uppercase tracking-widest">Track Forecast</h3>
+        <Clock className="w-5 h-5 text-red-500" />
+        <h3 className="text-sm font-bold text-gray-200 uppercase tracking-widest">Track Forecast</h3>
       </div>
       <div className="space-y-3">
         {mlData.track_prediction.map((f, idx) => (
-          <div key={idx} className="flex items-center gap-4 bg-slate-950/50 border border-slate-800/50 rounded-lg p-3 hover:bg-slate-900/50 transition-colors">
+          <div key={idx} className="flex items-center gap-4 bg-black/40 border border-white/5 rounded-lg p-3 hover:bg-black/60 transition-colors shadow-inner">
             {/* Timeline dot */}
             <div className="flex flex-col items-center gap-1">
               <div className={`w-3 h-3 rounded-full border-2 ${confidenceColor(f.confidence)}`} />
@@ -35,14 +35,14 @@ export default function ForecastPanel({ mlData }) {
             
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-slate-200">
+                <span className="text-sm font-bold text-gray-200">
                   +{f.forecast_hour}h Forecast
                 </span>
-                <span className={`text-xs font-mono font-bold ${textColor(f.confidence)}`}>
+                <span className={`text-xs font-mono font-bold ${textColor(f.confidence)} drop-shadow-[0_0_5px_currentColor]`}>
                   {(f.confidence * 100).toFixed(0)}% conf
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-mono mt-1">
+              <p className="text-xs text-gray-400 font-mono mt-1">
                 {f.latitude.toFixed(2)}° N, {f.longitude.toFixed(2)}° E
               </p>
             </div>

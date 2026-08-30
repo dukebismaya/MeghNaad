@@ -1,25 +1,25 @@
 import React from "react";
-import { Server, CheckCircle2, XCircle } from "lucide-react";
+import { Cpu, CheckCircle2, XCircle } from "lucide-react";
 
 export default function ModelStatus({ mlStatus }) {
   if (!mlStatus) return null;
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+    <div className="glass-card p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Server className="w-5 h-5 text-slate-400" />
-        <h3 className="text-sm font-bold text-slate-200 uppercase tracking-widest">Model Information</h3>
+        <Cpu className="w-5 h-5 text-gray-400" />
+        <h3 className="text-sm font-bold text-gray-200 uppercase tracking-widest">Model Info</h3>
       </div>
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center bg-slate-950/50 p-3 rounded-lg border border-slate-800/50">
+        <div className="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-white/5 shadow-inner">
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wider">Name</p>
-            <p className="text-sm font-bold text-slate-200">{mlStatus.model_name}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider">Architecture</p>
+            <p className="text-sm font-bold text-gray-200">{mlStatus.model_name}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-500 uppercase tracking-wider">Version</p>
-            <p className="text-sm font-mono text-cyan-400">{mlStatus.model_version}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider">Version</p>
+            <p className="text-sm font-mono font-bold text-red-500 drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]">{mlStatus.model_version}</p>
           </div>
         </div>
 

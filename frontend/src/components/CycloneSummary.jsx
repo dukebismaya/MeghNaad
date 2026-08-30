@@ -56,53 +56,57 @@ export default function CycloneSummary({ mlData, activeCyclone }) {
       {/* Grid Stats */}
       <div className="grid grid-cols-2 gap-3">
         {/* Wind Speed */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center">
+        <div className="glass-card p-4 flex flex-col items-center justify-center">
           <Wind className="w-5 h-5 text-red-400 mb-2" />
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest">Wind Speed</p>
-          <p className="text-2xl font-black font-mono text-slate-100 mt-1">
-            {current_state.wind_speed_kt} <span className="text-xs text-slate-500 font-sans">kt</span>
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest">Wind Speed</p>
+          <p className="text-2xl font-black font-mono text-white mt-1 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+            {current_state.wind_speed_kt} <span className="text-xs text-gray-500 font-sans">kt</span>
           </p>
         </div>
 
         {/* Central Pressure */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center">
-          <Gauge className="w-5 h-5 text-amber-400 mb-2" />
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest">Central Pressure</p>
-          <p className="text-2xl font-black font-mono text-slate-100 mt-1">
-            {current_state.central_pressure_hpa} <span className="text-xs text-slate-500 font-sans">hPa</span>
+        <div className="glass-card p-4 flex flex-col items-center justify-center">
+          <Gauge className="w-5 h-5 text-amber-400 mb-2 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest">Central Pressure</p>
+          <p className="text-2xl font-black font-mono text-white mt-1 drop-shadow-[0_0_10px_rgba(251,191,36,0.3)]">
+            {current_state.central_pressure_hpa} <span className="text-xs text-gray-500 font-sans">hPa</span>
           </p>
         </div>
         
         {/* Current Location */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center col-span-2">
-          <Crosshair className="w-5 h-5 text-blue-400 mb-2" />
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest">Current Location</p>
-          <p className="text-lg font-black font-mono text-slate-100 mt-1">
+        <div className="glass-card p-4 flex flex-col items-center justify-center col-span-2">
+          <Crosshair className="w-5 h-5 text-red-500 mb-2 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest">Current Location</p>
+          <p className="text-lg font-black font-mono text-white mt-1">
             {current_state.latitude.toFixed(2)}° N, {current_state.longitude.toFixed(2)}° E
           </p>
         </div>
       </div>
 
       {/* Confidence Indicators */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Model Confidence</h3>
-        <div className="space-y-3">
+      <div className="glass-card p-4">
+        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2"><Activity className="w-4 h-4 text-red-500"/> Model Confidence</h3>
+        <div className="space-y-4">
           <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-slate-300">Detection Confidence</span>
-              <span className="font-mono text-emerald-400">{(detection.confidence * 100).toFixed(0)}%</span>
+            <div className="flex justify-between text-xs mb-1.5">
+              <span className="text-gray-300">Detection Confidence</span>
+              <span className="font-mono font-bold text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.8)]">{(detection.confidence * 100).toFixed(0)}%</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-1.5">
-              <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: `${detection.confidence * 100}%` }}></div>
+            <div className="w-full bg-black/50 border border-white/5 rounded-full h-2 overflow-hidden shadow-inner">
+              <div className="bg-gradient-to-r from-red-600 to-red-400 h-2 rounded-full relative" style={{ width: `${detection.confidence * 100}%` }}>
+                <div className="absolute top-0 right-0 bottom-0 left-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)] animate-[shimmer_2s_infinite]"></div>
+              </div>
             </div>
           </div>
           <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-slate-300">Classification Confidence</span>
-              <span className="font-mono text-emerald-400">{(classification.confidence * 100).toFixed(0)}%</span>
+            <div className="flex justify-between text-xs mb-1.5">
+              <span className="text-gray-300">Classification Confidence</span>
+              <span className="font-mono font-bold text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.8)]">{(classification.confidence * 100).toFixed(0)}%</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-1.5">
-              <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: `${classification.confidence * 100}%` }}></div>
+            <div className="w-full bg-black/50 border border-white/5 rounded-full h-2 overflow-hidden shadow-inner">
+              <div className="bg-gradient-to-r from-rose-600 to-rose-400 h-2 rounded-full relative" style={{ width: `${classification.confidence * 100}%` }}>
+                <div className="absolute top-0 right-0 bottom-0 left-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)] animate-[shimmer_2s_infinite]" style={{animationDelay: '1s'}}></div>
+              </div>
             </div>
           </div>
         </div>

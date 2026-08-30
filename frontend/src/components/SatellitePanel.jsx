@@ -12,9 +12,9 @@ export default function SatellitePanel({ mlStatus }) {
   ];
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+    <div className="glass-card p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Satellite className="w-5 h-5 text-cyan-400" />
+        <Satellite className="w-5 h-5 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
         <h3 className="text-sm font-bold text-slate-200 uppercase tracking-widest">Satellite Analysis</h3>
       </div>
 
@@ -26,10 +26,10 @@ export default function SatellitePanel({ mlStatus }) {
             disabled={!band.available}
             className={`flex-1 py-1.5 text-xs font-bold rounded-lg border transition-colors ${
               activeBand === band.id 
-                ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-400" 
+                ? "bg-red-500/20 border-red-500/50 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]" 
                 : band.available 
-                  ? "bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800" 
-                  : "bg-slate-900 border-slate-800/50 text-slate-600 cursor-not-allowed opacity-50"
+                  ? "bg-black/40 border-white/10 text-gray-400 hover:bg-black/60" 
+                  : "bg-black/20 border-transparent text-gray-600 cursor-not-allowed opacity-50"
             }`}
           >
             {band.label}
@@ -37,8 +37,8 @@ export default function SatellitePanel({ mlStatus }) {
         ))}
       </div>
 
-      <div className="aspect-video bg-slate-950 rounded-lg border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden group">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1),transparent_70%)]" />
+      <div className="aspect-video bg-black/60 rounded-lg border border-white/5 flex flex-col items-center justify-center relative overflow-hidden group shadow-inner">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.05),transparent_70%)]" />
         
         {isDemo ? (
           <div className="text-center z-10 p-4">
