@@ -1,18 +1,26 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
 
-/* ── Design Tokens ── */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #020617; /* slate-950 */
+  overflow: hidden;
 }
 
 /* ── Leaflet Overrides ── */
 .leaflet-container {
   height: 100%;
   width: 100%;
-  background: #0a0f1e;
+  background: #020617 !important;
   font-family: "Inter", sans-serif;
 }
 
@@ -38,70 +46,12 @@
   color: #64748b !important;
 }
 
-/* ── Cyclone Eye Marker ── */
-.cyclone-eye-marker {
-  position: relative;
-  width: 20px;
-  height: 20px;
-}
-
-.cyclone-eye-marker .eye-core {
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  background: #ef4444;
-  box-shadow: 0 0 12px 4px rgba(239, 68, 68, 0.6);
-  z-index: 2;
-}
-
-.cyclone-eye-marker .eye-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid rgba(239, 68, 68, 0.7);
-  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.cyclone-eye-marker .eye-ring-2 {
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(239, 68, 68, 0.4);
-  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  animation-delay: 0.5s;
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.85);
-    opacity: 1;
-  }
-  70% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
-}
-
-/* ── Glowing status dot ── */
-@keyframes glow-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.animate-glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
-}
-
 /* ── Scrollbar ── */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(2, 6, 23, 0.5);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #1e293b;
@@ -111,9 +61,14 @@
   background: #334155;
 }
 
-/* ── Glassmorphism utility ── */
+/* ── Glassmorphism ── */
 .glass {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* ── Recharts Tooltip Override ── */
+.recharts-tooltip-wrapper {
+  outline: none !important;
 }

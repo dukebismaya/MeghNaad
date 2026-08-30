@@ -10,10 +10,26 @@ from datetime import datetime, timedelta, timezone
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Dict, Any
+
+from models.schemas import (
+    CycloneTelemetry,
+    ChartDataPoint,
+    XAIHeatmapMeta,
+    TrackPoint,
+    ForecastPoint,
+    PINNValidation,
+    CycloneInfo,
+    MLStatusResponse,
+    MLPredictResponse
+)
+from services.ml_service import get_ml_status, predict_cyclone
 
 # ──────────────────────────────────────────────
 # App initialization
 # ──────────────────────────────────────────────
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 app = FastAPI(
     title="MeghNaad — Cyclone Tracking API",
@@ -28,82 +44,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ──────────────────────────────────────────────
-# Pydantic models
-# ──────────────────────────────────────────────
-
-IST = timezone(timedelta(hours=5, minutes=30))
-
-
-class TrackPoint(BaseModel):
-    lat: float
-    lon: float
-    timestamp: str
-    wind_kts: float | None = None
-    pressure_hpa: float | None = None
-
-
-class ForecastPoint(BaseModel):
-    lat: float
-    lon: float
-    hour: int  # +12, +24, +48
-    timestamp: str
-    confidence: float  # 0.0 – 1.0
-
-
-class PINNValidation(BaseModel):
-    """Physics-Informed Neural Network consistency checks."""
-    coriolis_consistent: bool
-    mass_conservation_loss: float
-    momentum_residual: float
-    energy_budget_balanced: bool
-
-
-class CycloneInfo(BaseModel):
-    cyclone_id: str
-    name: str
-    basin: str
-    season: int
-    status: str  # "active" | "dissipating" | "archived"
-    category: str
-    dvorak_t_number: float
-    max_wind_kts: float
-    central_pressure_hpa: float
-    eye_diameter_km: float | None
-    movement_dir: str
-    movement_speed_kmh: float
-    satellite: str
-    last_updated: str
-
-
-class CycloneTelemetry(BaseModel):
-    info: CycloneInfo
-    pinn: PINNValidation
-    track: list[TrackPoint]
-    forecast: list[ForecastPoint]
-
-
-class ChartDataPoint(BaseModel):
-    timestamp: str
-    label: str
-    actual_pressure: float | None = None
-    predicted_pressure: float | None = None
-    actual_wind: float | None = None
-    predicted_wind: float | None = None
-
-
-class XAIHeatmapMeta(BaseModel):
-    model_name: str
-    technique: str
-    target_layer: str
-    resolution_km: float
-    satellite: str
-    bands_used: list[str]
-    activation_grid: list[list[float]]
-    feature_importance: dict[str, float]
-    timestamp: str
-
 
 # ──────────────────────────────────────────────
 # Mock telemetry generators
@@ -331,6 +271,23 @@ def get_xai_heatmap():
         },
         timestamp=_ts(_now()),
     )
+
+
+@app.get("/api/ml/status", response_model=MLStatusResponse)
+def get_ml_status_endpoint():
+    """
+    Returns the current status of the integrated ML model.
+    """
+    return get_ml_status()
+
+
+@app.post("/api/ml/predict", response_model=MLPredictResponse)
+def predict_cyclone_endpoint(input_data: Dict[str, Any]):
+    """
+    Simulates a prediction from the multimodal ML model.
+    Receives INSAT-3D, ERA5, and IBTrACS data to predict track and intensity.
+    """
+    return predict_cyclone(input_data)
 
 
 # ──────────────────────────────────────────────
