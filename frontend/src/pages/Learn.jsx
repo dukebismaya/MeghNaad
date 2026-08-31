@@ -135,6 +135,13 @@ export default function Learn() {
                 <strong>A:</strong> The model generates raw categorical logits. We apply a Softmax function to calculate the mathematical probability. However, to account for real-world atmospheric volatility, we blend this raw neural net confidence with a meteorological heuristic (wind intensity factor). A well-defined 100-knot storm guarantees higher detection confidence than a forming 30-knot depression.
               </p>
             </div>
+
+            <div className="bg-slate-900/50 p-5 rounded-xl border border-slate-800">
+              <h4 className="font-bold text-rose-400 mb-2">Q: If a new cyclone occurs tomorrow, can this system get real-time access to track it?</h4>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                <strong>A:</strong> Yes! We have access to the ISRO MOSDAC API, but government satellite data isn't a simple live web feed. It comes in massive, raw scientific binary files (like HDF5/NetCDF). Our production roadmap involves setting up an automated ingestion pipeline: a backend cron job will ping the MOSDAC API every 30 minutes to download the latest INSAT-3D arrays, our Python backend will parse the HDF5 binary, and then feed those raw arrays directly into our PyTorch MultiModalCycloneNet for immediate inference and frontend visualization.
+              </p>
+            </div>
           </div>
         </section>
 
