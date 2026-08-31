@@ -168,7 +168,7 @@ def get_xai_heatmap():
             "outflow_symmetry": 0.12,
             "warm_core_anomaly": 0.09,
         },
-        timestamp=_ts(_now()),
+        timestamp=datetime.now(IST).isoformat(),
     )
 
 
