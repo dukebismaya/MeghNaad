@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import Overview from "./pages/Overview";
+import Learn from "./pages/Learn";
 import Header from "./components/Header";
 import CycloneSummary from "./components/CycloneSummary";
 import CycloneMap from "./components/CycloneMap";
@@ -135,31 +138,37 @@ export default function App() {
         onSelectCyclone={handleSelectCyclone}
       />
       
-      <div className="flex flex-1 overflow-hidden relative">
-        {/* Left Sidebar */}
-        <aside className="w-[400px] shrink-0 glass border-r-0 flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
-          <CycloneSummary mlData={mlPrediction} activeCyclone={currentLegacyCyclone} />
-          <div className="mt-6 flex-1 min-h-[300px]">
-            <IntensityChart mlData={mlPrediction} historicalData={currentLegacyCyclone?.track} />
-          </div>
-        </aside>
+      <Routes>
+        <Route path="/overview" element={<Overview />} />
+        <Route path="/learn" element={<Learn />} />
+        <Route path="/" element={
+          <div className="flex flex-1 overflow-hidden relative">
+            {/* Left Sidebar */}
+            <aside className="w-[400px] shrink-0 glass border-r-0 flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
+              <CycloneSummary mlData={mlPrediction} activeCyclone={currentLegacyCyclone} />
+              <div className="mt-6 flex-1 min-h-[300px]">
+                <IntensityChart mlData={mlPrediction} historicalData={currentLegacyCyclone?.track} />
+              </div>
+            </aside>
 
-        {/* Main Map */}
-        <main className="flex-1 relative z-0">
-          <CycloneMap mlData={mlPrediction} historicalData={currentLegacyCyclone?.track} />
-        </main>
+            {/* Main Map */}
+            <main className="flex-1 relative z-0">
+              <CycloneMap mlData={mlPrediction} historicalData={currentLegacyCyclone?.track} />
+            </main>
 
-        {/* Right Sidebar */}
-        <aside className="w-[420px] shrink-0 glass border-l-0 flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
-          <ForecastPanel mlData={mlPrediction} />
-          <SatellitePanel mlData={mlPrediction} mlStatus={mlStatus} />
-          <div className="my-4">
-            <ExplainabilityPanel xaiData={xaiData} mlData={mlPrediction} />
+            {/* Right Sidebar */}
+            <aside className="w-[420px] shrink-0 glass border-l-0 flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
+              <ForecastPanel mlData={mlPrediction} />
+              <SatellitePanel mlData={mlPrediction} mlStatus={mlStatus} />
+              <div className="my-4">
+                <ExplainabilityPanel xaiData={xaiData} mlData={mlPrediction} />
+              </div>
+              <DataSources mlStatus={mlStatus} />
+              <ModelStatus mlStatus={mlStatus || mlPrediction} />
+            </aside>
           </div>
-          <DataSources mlStatus={mlStatus} />
-          <ModelStatus mlStatus={mlStatus || mlPrediction} />
-        </aside>
-      </div>
+        } />
+      </Routes>
     </div>
   );
 }

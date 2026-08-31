@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Tornado, Satellite, ShieldCheck, Radio, Search } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Tornado, Satellite, ShieldCheck, Radio, Search, Home, Info } from "lucide-react";
 
 export default function Header({ apiStatus, mlStatus, onSearchChange, searchResults, onSelectCyclone }) {
   const isDemo = !mlStatus?.model_loaded || mlStatus?.is_demo;
   const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const location = useLocation();
 
   const handleInputChange = (e) => {
     const val = e.target.value;
@@ -23,16 +25,21 @@ export default function Header({ apiStatus, mlStatus, onSearchChange, searchResu
   return (
     <header className="glass border-b border-slate-800/60 px-6 py-3 flex items-center justify-between z-[1000] shrink-0 relative">
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <Tornado className="w-6 h-6 text-red-500" />
           <h1 className="text-xl font-black tracking-tight">
             <span className="text-red-500">Megh</span><span className="text-slate-100">Naad</span>
           </h1>
-        </div>
+        </Link>
         <div className="h-4 w-px bg-slate-700 mx-2 hidden md:block"></div>
-        <span className="text-xs text-slate-400 hidden md:block tracking-widest uppercase font-bold">
-          AI-Powered Tropical Cyclone Identification
-        </span>
+        <nav className="hidden md:flex gap-4 text-sm font-bold tracking-widest uppercase">
+          <Link to="/" className={`flex items-center gap-1.5 transition-colors ${location.pathname === '/' ? 'text-red-400' : 'text-slate-400 hover:text-slate-200'}`}>
+            <Home className="w-4 h-4" /> Dashboard
+          </Link>
+          <Link to="/overview" className={`flex items-center gap-1.5 transition-colors ${location.pathname === '/overview' ? 'text-red-400' : 'text-slate-400 hover:text-slate-200'}`}>
+            <Info className="w-4 h-4" /> Overview
+          </Link>
+        </nav>
       </div>
 
       <div className="flex-1 max-w-md mx-8 hidden lg:block">
