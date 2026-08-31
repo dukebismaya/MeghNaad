@@ -6,10 +6,15 @@ import { TileLayer } from "@deck.gl/geo-layers";
 import { BitmapLayer } from "@deck.gl/layers";
 import { Layers, Globe, Map } from "lucide-react";
 
+const ESRI_SATELLITE = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 const ESRI_DARK = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
 
 export default function CycloneMap({ mlData, historicalData }) {
   const [is3D, setIs3D] = useState(true);
+  const [showBaseMap, setShowBaseMap] = useState(true);
+  const [showTrack, setShowTrack] = useState(true);
+  const [showForecast, setShowForecast] = useState(true);
+  const [mapStyle, setMapStyle] = useState('satellite'); // 'satellite' or 'dark'
 
   if (!mlData || !mlData.current_state) return <div className="h-full w-full bg-slate-950"></div>;
 
@@ -27,7 +32,7 @@ export default function CycloneMap({ mlData, historicalData }) {
   // Base map layer using tiles mapped onto the globe or map
   const tileLayer = new TileLayer({
     id: "tile-layer",
-    data: ESRI_DARK,
+    data: mapStyle === 'satellite' ? ESRI_SATELLITE : ESRI_DARK,
     minZoom: 0,
     maxZoom: 19,
     tileSize: 256,
@@ -36,7 +41,8 @@ export default function CycloneMap({ mlData, historicalData }) {
       return new BitmapLayer(props, {
         data: null,
         image: props.data,
-        bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]]
+        bounds: [boundingBox[0][0], boundingBox[0][1], boundingBox[1][0], boundingBox[1][1]],
+        opacity: mapStyle === 'satellite' ? 0.7 : 1.0 // Slightly dim satellite for better contrast with overlays
       });
     }
   });
@@ -53,9 +59,32 @@ export default function CycloneMap({ mlData, historicalData }) {
     id: 'historical-path',
     data: [{ path: histCoords }],
     getPath: d => d.path,
-    getColor: [244, 63, 94, 200], // rose-500
-    getWidth: 20000,
-    widthMinPixels: 2,
+    getColor: [200, 200, 200, 150], // Light gray for the track line itself
+    getWidth: 10000,
+    widthMinPixels: 1.5,
+  });
+
+  const getWindColor = (windKts) => {
+    if (!windKts) return [200, 200, 200, 200];
+    if (windKts < 34) return [59, 130, 246, 255];   // Blue - Depression
+    if (windKts < 48) return [234, 179, 8, 255];    // Yellow - CS
+    if (windKts < 64) return [249, 115, 22, 255];   // Orange - SCS
+    if (windKts < 90) return [239, 68, 68, 255];    // Red - VSCS
+    if (windKts < 120) return [244, 63, 94, 255];   // Rose - ESCS
+    return [217, 70, 239, 255];                     // Fuchsia - Super
+  };
+
+  const historicalPointsLayer = new ScatterplotLayer({
+    id: 'historical-points',
+    data: historicalData || [],
+    getPosition: d => [d.lon, d.lat],
+    getFillColor: d => getWindColor(d.wind_kts),
+    getRadius: 15000,
+    radiusMinPixels: 3,
+    stroked: true,
+    getLineColor: [0, 0, 0, 200],
+    getLineWidth: 2000,
+    lineWidthMinPixels: 1
   });
 
   const predictedPathLayer = new PathLayer({
@@ -92,13 +121,22 @@ export default function CycloneMap({ mlData, historicalData }) {
     lineWidthMinPixels: 2
   });
 
+  const activeLayers = [
+    showBaseMap && tileLayer, 
+    showTrack && historicalPathLayer, 
+    showTrack && historicalPointsLayer,
+    showForecast && predictedPathLayer, 
+    showForecast && uncertaintyCircles, 
+    currentLocationMarker
+  ].filter(Boolean);
+
   return (
     <div className="h-full w-full relative group">
       <DeckGL
         views={is3D ? new _GlobeView({ id: "globe", resolution: 10 }) : new MapView({ id: "map" })}
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
-        layers={[tileLayer, historicalPathLayer, predictedPathLayer, uncertaintyCircles, currentLocationMarker]}
+        layers={activeLayers}
         style={{ backgroundColor: '#020617' }} // space background
         getCursor={() => 'crosshair'}
       />
@@ -122,18 +160,33 @@ export default function CycloneMap({ mlData, historicalData }) {
       {/* Map Layers Legend */}
       <div className="absolute bottom-4 left-4 z-[400] glass-card p-4 rounded-xl opacity-80 group-hover:opacity-100 transition-opacity">
         <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-          <Layers className="w-3 h-3 text-red-500 drop-shadow-[0_0_5px_currentColor]" /> Map Layers
+          <Layers className="w-3 h-3 text-red-500 drop-shadow-[0_0_5px_currentColor]" /> Map Controls
         </h4>
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-xs text-gray-300">
-            <input type="checkbox" checked readOnly className="accent-red-500 rounded bg-slate-900 border-slate-700" /> Base Map
+        <div className="space-y-2 mb-3 pb-3 border-b border-slate-700/50">
+          <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-white">
+            <input type="checkbox" checked={showBaseMap} onChange={() => setShowBaseMap(!showBaseMap)} className="accent-red-500 rounded bg-slate-900 border-slate-700 cursor-pointer" /> Base Map
           </label>
-          <label className="flex items-center gap-2 text-xs text-gray-300">
-            <input type="checkbox" checked readOnly className="accent-red-500 rounded bg-slate-900 border-slate-700" /> Cyclone Track
+          <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-white">
+            <input type="checkbox" checked={showTrack} onChange={() => setShowTrack(!showTrack)} className="accent-red-500 rounded bg-slate-900 border-slate-700 cursor-pointer" /> Historical Track
           </label>
-          <label className="flex items-center gap-2 text-xs text-gray-300">
-            <input type="checkbox" checked readOnly className="accent-red-500 rounded bg-slate-900 border-slate-700" /> Forecast Cone
+          <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-white">
+            <input type="checkbox" checked={showForecast} onChange={() => setShowForecast(!showForecast)} className="accent-red-500 rounded bg-slate-900 border-slate-700 cursor-pointer" /> Forecast Cone
           </label>
+        </div>
+        
+        <div className="flex gap-2">
+           <button 
+             onClick={() => setMapStyle('satellite')}
+             className={`flex-1 text-[10px] py-1 px-2 rounded font-bold ${mapStyle === 'satellite' ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-gray-400 hover:bg-slate-700'}`}
+           >
+             SATELLITE
+           </button>
+           <button 
+             onClick={() => setMapStyle('dark')}
+             className={`flex-1 text-[10px] py-1 px-2 rounded font-bold ${mapStyle === 'dark' ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-gray-400 hover:bg-slate-700'}`}
+           >
+             DARK
+           </button>
         </div>
       </div>
     </div>

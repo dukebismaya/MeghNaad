@@ -152,7 +152,7 @@ export default function App() {
         {/* Right Sidebar */}
         <aside className="w-[420px] shrink-0 glass border-l-0 flex flex-col overflow-y-auto custom-scrollbar p-5 z-10 shadow-2xl">
           <ForecastPanel mlData={mlPrediction} />
-          <SatellitePanel mlStatus={mlStatus || mlPrediction} />
+          <SatellitePanel mlData={mlPrediction} mlStatus={mlStatus} />
           <div className="my-4">
             <ExplainabilityPanel xaiData={xaiData} mlData={mlPrediction} />
           </div>
