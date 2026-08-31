@@ -1,8 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tornado, Satellite, ShieldCheck, Radio, Search } from "lucide-react";
 
-export default function Header({ apiStatus, mlStatus }) {
+export default function Header({ apiStatus, mlStatus, onSearchChange, searchResults, onSelectCyclone }) {
   const isDemo = !mlStatus?.model_loaded || mlStatus?.is_demo;
+  const [query, setQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setQuery(val);
+    if (onSearchChange) onSearchChange(val);
+    setShowDropdown(val.length > 0);
+  };
+
+  const handleSelect = (id) => {
+    if (onSelectCyclone) onSelectCyclone(id);
+    setQuery("");
+    setShowDropdown(false);
+  };
+
 
   return (
     <header className="glass border-b border-slate-800/60 px-6 py-3 flex items-center justify-between z-[1000] shrink-0 relative">
@@ -26,9 +42,26 @@ export default function Header({ apiStatus, mlStatus }) {
           </div>
           <input 
             type="text" 
+            value={query}
+            onChange={handleInputChange}
+            onFocus={() => setShowDropdown(query.length > 0)}
             className="block w-full pl-10 pr-3 py-1.5 border border-slate-700 rounded-md leading-5 bg-slate-900/50 text-slate-300 placeholder-slate-500 focus:outline-none focus:bg-slate-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 sm:text-sm transition-colors" 
-            placeholder="Search for region, basin, or active cyclone..." 
+            placeholder="Search for region, basin, or historical cyclone..." 
           />
+          {showDropdown && searchResults && searchResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-slate-900 border border-slate-700 rounded-md shadow-lg max-h-60 overflow-y-auto z-50">
+              {searchResults.map(c => (
+                <div 
+                  key={c.cyclone_id} 
+                  className="px-4 py-2 hover:bg-slate-800 cursor-pointer border-b border-slate-800 last:border-0"
+                  onClick={() => handleSelect(c.cyclone_id)}
+                >
+                  <div className="font-bold text-slate-200">{c.name} ({c.season})</div>
+                  <div className="text-xs text-slate-400">{c.category} • {c.basin}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

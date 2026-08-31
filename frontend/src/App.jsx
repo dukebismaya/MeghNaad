@@ -13,12 +13,15 @@ import {
   getActiveCyclones, 
   getXaiHeatmap, 
   getMlStatus, 
-  predictCyclone 
+  predictCyclone,
+  searchCyclones,
+  getCycloneById
 } from "./services/api";
 
 export default function App() {
   const [activeCyclones, setActiveCyclones] = useState([]);
   const [selectedCycloneIdx, setSelectedCycloneIdx] = useState(0);
+  const [searchResults, setSearchResults] = useState([]);
   const [xaiData, setXaiData] = useState(null);
   const [mlStatus, setMlStatus] = useState(null);
   const [mlPrediction, setMlPrediction] = useState(null);
@@ -41,9 +44,10 @@ export default function App() {
         const xai = await getXaiHeatmap().catch(() => null);
         setXaiData(xai);
 
-        // 4. Request ML Prediction (Using dummy input for now)
-        const prediction = await predictCyclone({ dummy_input: "test" }).catch(() => null);
-        setMlPrediction(prediction);
+        // 4. Request ML Prediction for the first cyclone if available
+        if (cyclones.length > 0) {
+          await fetchPredictionForCyclone(cyclones[0]);
+        }
 
         setLoading(false);
       } catch (err) {
@@ -54,6 +58,48 @@ export default function App() {
     }
     loadDashboard();
   }, []);
+
+  const fetchPredictionForCyclone = async (cyclone) => {
+    if (!cyclone || !cyclone.track || cyclone.track.length === 0) return;
+    const latest = cyclone.track[cyclone.track.length - 1];
+    try {
+      const prediction = await predictCyclone({
+        lat: latest.lat,
+        lon: latest.lon,
+        wind_kts: latest.wind_kts,
+        pressure_hpa: latest.pressure_hpa
+      });
+      setMlPrediction(prediction);
+    } catch (err) {
+      console.error("Failed to get prediction", err);
+    }
+  };
+
+  const handleSearchChange = async (query) => {
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    try {
+      const results = await searchCyclones(query);
+      setSearchResults(results);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSelectCyclone = async (cycloneId) => {
+    try {
+      const cyclone = await getCycloneById(cycloneId);
+      if (cyclone) {
+        setActiveCyclones([cyclone]);
+        setSelectedCycloneIdx(0);
+        await fetchPredictionForCyclone(cyclone);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -81,7 +127,13 @@ export default function App() {
 
   return (
     <div className="h-screen w-screen flex flex-col font-sans overflow-hidden bg-transparent text-gray-200">
-      <Header apiStatus="online" mlStatus={mlStatus || mlPrediction} />
+      <Header 
+        apiStatus="online" 
+        mlStatus={mlStatus || mlPrediction} 
+        onSearchChange={handleSearchChange}
+        searchResults={searchResults}
+        onSelectCyclone={handleSelectCyclone}
+      />
       
       <div className="flex flex-1 overflow-hidden relative">
         {/* Left Sidebar */}

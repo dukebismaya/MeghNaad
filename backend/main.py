@@ -21,9 +21,11 @@ from models.schemas import (
     PINNValidation,
     CycloneInfo,
     MLStatusResponse,
-    MLPredictResponse
+    MLPredictResponse,
+    CycloneListItem
 )
 from services.ml_service import get_ml_status, predict_cyclone
+from services.data_service import get_all_cyclones, get_cyclone_list, search_cyclones, get_cyclone_by_id
 
 # ──────────────────────────────────────────────
 # App initialization
@@ -46,114 +48,6 @@ app.add_middleware(
 )
 
 # ──────────────────────────────────────────────
-# Mock telemetry generators
-# ──────────────────────────────────────────────
-
-def _now() -> datetime:
-    return datetime(2024, 6, 15, 6, 0, 0, tzinfo=IST)
-
-
-def _ts(dt: datetime) -> str:
-    return dt.strftime("%Y-%m-%dT%H:%M:%S%z")
-
-
-def _build_biparjoy() -> CycloneTelemetry:
-    """Cyclone Biparjoy — Arabian Sea ESCS, June 2023 analogue."""
-    base = _now()
-
-    track = [
-        TrackPoint(lat=13.2, lon=67.5, timestamp=_ts(base - timedelta(hours=72)), wind_kts=45, pressure_hpa=998),
-        TrackPoint(lat=14.0, lon=67.0, timestamp=_ts(base - timedelta(hours=60)), wind_kts=55, pressure_hpa=992),
-        TrackPoint(lat=15.1, lon=66.3, timestamp=_ts(base - timedelta(hours=48)), wind_kts=70, pressure_hpa=980),
-        TrackPoint(lat=16.5, lon=65.8, timestamp=_ts(base - timedelta(hours=36)), wind_kts=85, pressure_hpa=968),
-        TrackPoint(lat=17.8, lon=65.2, timestamp=_ts(base - timedelta(hours=24)), wind_kts=100, pressure_hpa=954),
-        TrackPoint(lat=19.0, lon=64.8, timestamp=_ts(base - timedelta(hours=12)), wind_kts=110, pressure_hpa=944),
-        TrackPoint(lat=20.2, lon=64.5, timestamp=_ts(base), wind_kts=115, pressure_hpa=940),
-    ]
-
-    forecast = [
-        ForecastPoint(lat=21.0, lon=64.0, hour=12, timestamp=_ts(base + timedelta(hours=12)), confidence=0.92),
-        ForecastPoint(lat=22.1, lon=63.3, hour=24, timestamp=_ts(base + timedelta(hours=24)), confidence=0.84),
-        ForecastPoint(lat=23.5, lon=62.5, hour=48, timestamp=_ts(base + timedelta(hours=48)), confidence=0.68),
-    ]
-
-    return CycloneTelemetry(
-        info=CycloneInfo(
-            cyclone_id="ARB-02-2024",
-            name="Biparjoy",
-            basin="Arabian Sea (North Indian Ocean)",
-            season=2024,
-            status="active",
-            category="Extremely Severe Cyclonic Storm (ESCS)",
-            dvorak_t_number=5.5,
-            max_wind_kts=115,
-            central_pressure_hpa=940,
-            eye_diameter_km=35,
-            movement_dir="NNW",
-            movement_speed_kmh=14,
-            satellite="INSAT-3DS",
-            last_updated=_ts(base),
-        ),
-        pinn=PINNValidation(
-            coriolis_consistent=True,
-            mass_conservation_loss=0.0024,
-            momentum_residual=0.0031,
-            energy_budget_balanced=True,
-        ),
-        track=track,
-        forecast=forecast,
-    )
-
-
-def _build_mocha() -> CycloneTelemetry:
-    """Cyclone Mocha — Bay of Bengal ESCS, May 2023 analogue."""
-    base = _now() - timedelta(hours=6)
-
-    track = [
-        TrackPoint(lat=10.5, lon=88.0, timestamp=_ts(base - timedelta(hours=72)), wind_kts=40, pressure_hpa=1000),
-        TrackPoint(lat=11.8, lon=87.5, timestamp=_ts(base - timedelta(hours=60)), wind_kts=55, pressure_hpa=994),
-        TrackPoint(lat=13.0, lon=87.0, timestamp=_ts(base - timedelta(hours=48)), wind_kts=75, pressure_hpa=976),
-        TrackPoint(lat=14.5, lon=86.2, timestamp=_ts(base - timedelta(hours=36)), wind_kts=90, pressure_hpa=960),
-        TrackPoint(lat=16.0, lon=85.8, timestamp=_ts(base - timedelta(hours=24)), wind_kts=105, pressure_hpa=948),
-        TrackPoint(lat=17.5, lon=85.0, timestamp=_ts(base - timedelta(hours=12)), wind_kts=120, pressure_hpa=936),
-        TrackPoint(lat=18.8, lon=84.5, timestamp=_ts(base), wind_kts=130, pressure_hpa=928),
-    ]
-
-    forecast = [
-        ForecastPoint(lat=19.8, lon=84.0, hour=12, timestamp=_ts(base + timedelta(hours=12)), confidence=0.89),
-        ForecastPoint(lat=20.5, lon=83.5, hour=24, timestamp=_ts(base + timedelta(hours=24)), confidence=0.77),
-        ForecastPoint(lat=21.2, lon=82.8, hour=48, timestamp=_ts(base + timedelta(hours=48)), confidence=0.58),
-    ]
-
-    return CycloneTelemetry(
-        info=CycloneInfo(
-            cyclone_id="BOB-01-2024",
-            name="Mocha",
-            basin="Bay of Bengal (North Indian Ocean)",
-            season=2024,
-            status="active",
-            category="Super Cyclonic Storm (SuCS)",
-            dvorak_t_number=6.5,
-            max_wind_kts=130,
-            central_pressure_hpa=928,
-            eye_diameter_km=28,
-            movement_dir="NNE",
-            movement_speed_kmh=18,
-            satellite="INSAT-3DS",
-            last_updated=_ts(base),
-        ),
-        pinn=PINNValidation(
-            coriolis_consistent=True,
-            mass_conservation_loss=0.0018,
-            momentum_residual=0.0027,
-            energy_budget_balanced=True,
-        ),
-        track=track,
-        forecast=forecast,
-    )
-
-
-# ──────────────────────────────────────────────
 # Endpoints
 # ──────────────────────────────────────────────
 
@@ -171,60 +65,65 @@ def root():
 def get_active_cyclones():
     """
     Returns current active cyclone telemetry and path coordinates.
-
-    Each entry includes basic cyclone info, PINN physics validation,
-    historical track points, and 12h/24h/48h forecast positions.
+    Using get_all_cyclones() as a placeholder for active ones.
     """
-    return [_build_biparjoy(), _build_mocha()]
+    return get_all_cyclones()
 
 
-@app.get("/api/cyclone/forecast-chart", response_model=list[ChartDataPoint])
-def get_forecast_chart():
+@app.get("/api/cyclone/list", response_model=list[CycloneListItem])
+def get_cyclone_list_endpoint():
+    """
+    Returns a list of all historical cyclones.
+    """
+    return get_cyclone_list()
+
+
+@app.get("/api/cyclone/search", response_model=list[CycloneListItem])
+def search_cyclones_endpoint(q: str):
+    """
+    Search cyclones by query.
+    """
+    return search_cyclones(q)
+
+
+@app.get("/api/cyclone/{cyclone_id}", response_model=CycloneTelemetry)
+def get_cyclone(cyclone_id: str):
+    """
+    Get cyclone details by ID.
+    """
+    return get_cyclone_by_id(cyclone_id)
+
+
+@app.get("/api/cyclone/forecast-chart/{cyclone_id}", response_model=list[ChartDataPoint])
+def get_forecast_chart(cyclone_id: str):
     """
     Returns historical vs predicted pressure/wind intensity data
     formatted for direct consumption by Recharts <ComposedChart>.
 
     Time axis spans -72h (historical) through +48h (forecast).
     """
-    base = _now()
+    cyclone = get_cyclone_by_id(cyclone_id)
     data: list[ChartDataPoint] = []
+    
+    if not cyclone:
+        return data
 
-    # Historical data points (actual values known)
-    historical = [
-        (-72, 998, 45),
-        (-60, 992, 55),
-        (-48, 980, 70),
-        (-36, 968, 85),
-        (-24, 954, 100),
-        (-12, 944, 110),
-        (0,   940, 115),
-    ]
-    for h, pressure, wind in historical:
-        dt = base + timedelta(hours=h)
+    # Use the history points from track
+    history = cyclone.track
+    # If we need predictions here, we would get it from predict_cyclone endpoint.
+    # But usually, it's better to render this directly on the frontend using ML predictions as we are sending track points.
+    
+    for idx, pt in enumerate(history):
+        # We assign some label based on reverse index
+        h = -(len(history) - 1 - idx) * 6 # Approx 6 hours interval
+        label = f"{-h}h" if h < 0 else "T₀ (Now)"
         data.append(ChartDataPoint(
-            timestamp=_ts(dt),
-            label=f"{'T' if h == 0 else ''}{h:+d}h" if h != 0 else "T₀ (Now)",
-            actual_pressure=pressure,
-            predicted_pressure=pressure + (1.5 if h <= -24 else 0.8),
-            actual_wind=wind,
-            predicted_wind=wind - (2 if h <= -24 else 1),
-        ))
-
-    # Forecast-only data points (no actuals yet)
-    forecasts = [
-        (12,  934, 120),
-        (24,  928, 125),
-        (48,  920, 130),
-    ]
-    for h, pressure, wind in forecasts:
-        dt = base + timedelta(hours=h)
-        data.append(ChartDataPoint(
-            timestamp=_ts(dt),
-            label=f"+{h}h",
-            actual_pressure=None,
-            predicted_pressure=pressure,
-            actual_wind=None,
-            predicted_wind=wind,
+            timestamp=pt.timestamp,
+            label=label,
+            actual_pressure=pt.pressure_hpa,
+            predicted_pressure=pt.pressure_hpa,
+            actual_wind=pt.wind_kts,
+            predicted_wind=pt.wind_kts,
         ))
 
     return data

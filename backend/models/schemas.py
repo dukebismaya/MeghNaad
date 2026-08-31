@@ -66,6 +66,14 @@ class XAIHeatmapMeta(BaseModel):
     feature_importance: Dict[str, float]
     timestamp: str
 
+class CycloneListItem(BaseModel):
+    cyclone_id: str
+    name: str
+    basin: str
+    season: int
+    category: str
+    max_wind_kts: float
+
 # ──────────────────────────────────────────────
 # New ML Contract Models
 # ──────────────────────────────────────────────

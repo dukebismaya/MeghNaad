@@ -6,9 +6,27 @@ export async function getActiveCyclones() {
   return response.json();
 }
 
-export async function getForecastChart() {
-  const response = await fetch(`${API_BASE}/api/cyclone/forecast-chart`);
+export async function getForecastChart(cycloneId) {
+  const response = await fetch(`${API_BASE}/api/cyclone/forecast-chart/${cycloneId}`);
   if (!response.ok) throw new Error("Failed to fetch forecast chart data");
+  return response.json();
+}
+
+export async function searchCyclones(query) {
+  const response = await fetch(`${API_BASE}/api/cyclone/search?q=${encodeURIComponent(query)}`);
+  if (!response.ok) throw new Error("Failed to search cyclones");
+  return response.json();
+}
+
+export async function getCycloneById(id) {
+  const response = await fetch(`${API_BASE}/api/cyclone/${encodeURIComponent(id)}`);
+  if (!response.ok) throw new Error("Failed to get cyclone by id");
+  return response.json();
+}
+
+export async function getCycloneList() {
+  const response = await fetch(`${API_BASE}/api/cyclone/list`);
+  if (!response.ok) throw new Error("Failed to fetch cyclone list");
   return response.json();
 }
 
