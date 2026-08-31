@@ -1,147 +1,187 @@
 import React from 'react';
-import { BookOpen, HelpCircle, Code, ShieldQuestion, BrainCircuit } from 'lucide-react';
+import { BookOpen, HelpCircle, Code, ShieldQuestion, BrainCircuit, Activity, Database, Network, Globe2, Layers, Crosshair } from 'lucide-react';
 
 export default function Learn() {
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-slate-950 text-slate-200">
-      <div className="max-w-4xl mx-auto space-y-12 pb-16">
+      <div className="max-w-5xl mx-auto space-y-12 pb-16">
         
         {/* Header */}
         <div className="border-b border-slate-800 pb-8 mt-4">
           <div className="flex items-center gap-3 mb-4">
-            <BookOpen className="w-8 h-8 text-blue-500" />
-            <h1 className="text-4xl font-black tracking-tight text-white">MeghNaad: Internal Knowledge Base</h1>
+            <BookOpen className="w-10 h-10 text-blue-500" />
+            <h1 className="text-4xl font-black tracking-tight text-white">MeghNaad: The Complete Knowledge Base</h1>
           </div>
-          <p className="text-slate-400">
-            This hidden document is for team preparation. It covers the architecture, technologies used, key terminologies, and potential Q&A from judges.
+          <p className="text-lg text-slate-400 leading-relaxed">
+            This is the master internal documentation for <strong>Team Sentinels</strong>. It contains an exhaustive breakdown of the MeghNaad architecture, the AI/ML cores, our data pipeline, and a comprehensive defense guide for potential counter-questions from hackathon judges.
           </p>
         </div>
 
-        {/* Section 1: Project Summary & Tech Stack */}
+        {/* Section 1: Executive Summary */}
         <section className="space-y-6">
           <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
-            <Code className="w-6 h-6 text-emerald-500" /> What We Built & Tech Stack
+            <Globe2 className="w-6 h-6 text-emerald-500" /> 1. Executive Summary & Core Mission
           </h2>
           <div className="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-            <p className="mb-4 leading-relaxed">
-              <strong>MeghNaad</strong> is an AI-powered, multimodal tropical cyclone tracking and forecasting dashboard. It ingests multiple streams of meteorological data (Satellite imagery, Environmental sensors, Historical tracks) to predict cyclone intensity and future trajectory in the North Indian Ocean.
+            <p className="leading-relaxed text-slate-300">
+              <strong>MeghNaad</strong> is an end-to-end, AI-driven meteorological dashboard designed for the North Indian Ocean basin. 
+              Historically, predicting cyclone trajectories and intensities relies on massive, slow supercomputers running numerical weather prediction (NWP) models. 
+              MeghNaad leverages <strong>Deep Learning (CNNs + LSTMs)</strong> to process multimodal satellite and environmental data in milliseconds, providing disaster management agencies with real-time, probabilistic forecasts (Uncertainty Cones) and clear IMD-standard classifications.
             </p>
-            <h3 className="font-bold text-slate-300 mt-6 mb-3">Tech Stack:</h3>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <li className="bg-slate-900 p-3 rounded border border-slate-800">
-                <span className="text-blue-400 font-bold">Frontend (UI/UX)</span>
-                <p className="text-slate-400 mt-1">React, Vite, TailwindCSS (for glassmorphism UI), Lucide React (Icons).</p>
-              </li>
-              <li className="bg-slate-900 p-3 rounded border border-slate-800">
-                <span className="text-orange-400 font-bold">Frontend (Mapping)</span>
-                <p className="text-slate-400 mt-1">Deck.gl (high-performance WebGL mapping), MapLibre, ESRI Satellite Layers.</p>
-              </li>
-              <li className="bg-slate-900 p-3 rounded border border-slate-800">
-                <span className="text-green-400 font-bold">Backend</span>
-                <p className="text-slate-400 mt-1">FastAPI (Python) for rapid API serving, Uvicorn, Pandas (for IBTrACS data parsing).</p>
-              </li>
-              <li className="bg-slate-900 p-3 rounded border border-slate-800">
-                <span className="text-red-400 font-bold">Machine Learning Core</span>
-                <p className="text-slate-400 mt-1">PyTorch, Torchvision (MultiModalCycloneNet, CycloneTrajectoryLSTM).</p>
-              </li>
-            </ul>
           </div>
         </section>
 
-        {/* Section 2: Data Sources */}
+        {/* Section 2: Technical Architecture */}
         <section className="space-y-6">
           <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
-            <BrainCircuit className="w-6 h-6 text-purple-500" /> Data Sources & Multimodal ML
+            <Network className="w-6 h-6 text-blue-500" /> 2. System Architecture & Tech Stack
           </h2>
-          <div className="bg-slate-900/50 p-6 rounded-xl border border-slate-800 space-y-4 text-sm leading-relaxed">
-            <p>Our PyTorch model is "Multimodal", meaning it doesn't just look at one type of data. It fuses three major datasets:</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            <div className="border-l-2 border-slate-700 pl-4 py-2">
-              <h4 className="font-bold text-red-400 text-base">1. INSAT-3D (Satellite Imagery)</h4>
-              <p className="text-slate-400 mt-1">India's geostationary weather satellite. We use Infrared (IR), Water Vapor (WV), and Visible (VIS) bands to see cloud structure and the storm's "eye". (Note: We use synthetic canvas generation on the frontend to visualize this telemetry dynamically).</p>
+            {/* Frontend */}
+            <div className="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+              <h3 className="font-bold text-blue-400 mb-3 flex items-center gap-2"><Layers className="w-4 h-4"/> Frontend (Client Layer)</h3>
+              <ul className="space-y-3 text-sm text-slate-300">
+                <li><strong className="text-white">React.js & Vite:</strong> For instantaneous component rendering and lightning-fast build times.</li>
+                <li><strong className="text-white">Deck.gl & MapLibre:</strong> WebGL-accelerated mapping. Allows us to render hundreds of thousands of spatial data points (like the forecast cone and tracks) at 60 FPS without crashing the browser.</li>
+                <li><strong className="text-white">TailwindCSS:</strong> For the custom, premium "Glassmorphism" design system, making the dashboard look like a modern command center.</li>
+                <li><strong className="text-white">React Router:</strong> Enables seamless client-side routing between the Dashboard and the Overview pages.</li>
+              </ul>
+            </div>
+
+            {/* Backend */}
+            <div className="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+              <h3 className="font-bold text-green-400 mb-3 flex items-center gap-2"><Database className="w-4 h-4"/> Backend (API Layer)</h3>
+              <ul className="space-y-3 text-sm text-slate-300">
+                <li><strong className="text-white">FastAPI (Python):</strong> An asynchronous, high-performance web framework. Crucial because ML inference operations are blocking; FastAPI's async nature keeps the API responsive.</li>
+                <li><strong className="text-white">Uvicorn:</strong> ASGI web server used to run FastAPI in production.</li>
+                <li><strong className="text-white">Pandas & NumPy:</strong> Used for rapid parsing and pre-processing of the massive IBTrACS historical CSV dataset before it's sent to the frontend.</li>
+              </ul>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Section 3: The AI Core */}
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
+            <BrainCircuit className="w-6 h-6 text-purple-500" /> 3. The PyTorch Machine Learning Core
+          </h2>
+          <div className="bg-slate-900/50 p-6 rounded-xl border border-slate-800 space-y-6">
+            <p className="text-sm text-slate-300">
+              Our AI engine doesn't just look at one number; it fuses three distinct modalities of data to make its predictions. We built two bespoke neural network architectures:
+            </p>
+
+            <div className="border-l-2 border-purple-500 pl-4">
+              <h4 className="font-bold text-white text-lg">Model A: MultiModalCycloneNet (Intensity & Classification)</h4>
+              <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+                A hybrid architecture. It uses a <strong>Convolutional Neural Network (CNN)</strong> to extract spatial features from satellite imagery (the storm's eye, cloud banding), and a <strong>Multi-Layer Perceptron (MLP)</strong> to process numerical ERA5 environmental data (Pressure, SST, Lat/Lon). These two embeddings are concatenated and passed through dense layers to output the cyclone's IMD classification.
+              </p>
+            </div>
+
+            <div className="border-l-2 border-orange-500 pl-4">
+              <h4 className="font-bold text-white text-lg">Model B: CycloneTrajectoryLSTM (Track Forecasting)</h4>
+              <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+                A <strong>Long Short-Term Memory (LSTM)</strong> sequence-to-sequence network. It takes the last 4 time-steps (T-24h to T-0h) of the storm's coordinates, pressure, and wind speed. Because LSTMs have "memory," the model inherently understands momentum and physics, predicting the next 4 steps (T+6h to T+24h) to generate the trajectory and the Uncertainty Cone.
+              </p>
             </div>
             
-            <div className="border-l-2 border-slate-700 pl-4 py-2">
-              <h4 className="font-bold text-blue-400 text-base">2. ERA5 (Environmental Grids)</h4>
-              <p className="text-slate-400 mt-1">ECMWF's atmospheric reanalysis dataset. This gives our model numeric grid data like Sea Surface Temperature (SST), Mean Sea Level Pressure (MSLP), and wind vectors.</p>
-            </div>
-
-            <div className="border-l-2 border-slate-700 pl-4 py-2">
-              <h4 className="font-bold text-yellow-400 text-base">3. IBTrACS (Historical Tracks)</h4>
-              <p className="text-slate-400 mt-1">The International Best Track Archive. This is our ground truth dataset (CSV in the backend). It provides historical Lat/Lon, wind speed, and pressure for every past cyclone to train the trajectory LSTM.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 3: Terminologies */}
-        <section className="space-y-6">
-          <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
-            <BookOpen className="w-6 h-6 text-amber-500" /> Key Terminologies
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-              <span className="font-bold text-white">MSLP (Mean Sea Level Pressure)</span>
-              <p className="text-xs text-slate-400 mt-1">Measured in hPa (hectopascals). Lower pressure = stronger cyclone. A super cyclone can drop below 920 hPa.</p>
-            </div>
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-              <span className="font-bold text-white">SST (Sea Surface Temperature)</span>
-              <p className="text-xs text-slate-400 mt-1">Cyclones need warm water ({" > "}26.5°C or 299K) to fuel their thermodynamic engines.</p>
-            </div>
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-              <span className="font-bold text-white">Knot (kt)</span>
-              <p className="text-xs text-slate-400 mt-1">Nautical miles per hour. 1 knot ≈ 1.15 mph. Super cyclones exceed 120 kt.</p>
-            </div>
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-              <span className="font-bold text-white">XAI (Explainable AI)</span>
-              <p className="text-xs text-slate-400 mt-1">Heatmaps (like Grad-CAM) showing which part of the satellite image the AI looked at to make its decision.</p>
-            </div>
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-              <span className="font-bold text-white">LSTM</span>
-              <p className="text-xs text-slate-400 mt-1">Long Short-Term Memory. A type of neural network perfect for predicting sequences and time-series (like a storm's track).</p>
+            <div className="bg-black/30 p-4 rounded-lg">
+              <h4 className="font-bold text-rose-400 text-sm mb-2">Data Sources Used:</h4>
+              <ul className="text-xs text-slate-300 space-y-2 list-disc pl-4">
+                <li><strong>INSAT-3D:</strong> Indian geostationary satellite providing Infrared (IR) and Water Vapor (WV) imagery. (Synthesized in the UI for the demo).</li>
+                <li><strong>ERA5:</strong> European reanalysis data providing grid metrics like Sea Surface Temperature (SST) and Mean Sea Level Pressure (MSLP).</li>
+                <li><strong>IBTrACS:</strong> The global ground-truth archive of historical cyclone tracks used to train the LSTM.</li>
+              </ul>
             </div>
           </div>
         </section>
 
-        {/* Section 4: Cross Questions & Q&A */}
+        {/* Section 4: IMD Classification Standards */}
         <section className="space-y-6">
           <h2 className="text-2xl font-bold flex items-center gap-2 text-white">
-            <ShieldQuestion className="w-6 h-6 text-rose-500" /> Defense & Expected Questions
+            <Activity className="w-6 h-6 text-yellow-500" /> 4. IMD Classification Logic
           </h2>
-          <div className="space-y-4">
-            <div className="bg-slate-900/50 p-5 rounded-xl border border-slate-800">
-              <h4 className="font-bold text-rose-400 mb-2">Q: Why did you use PyTorch instead of just scikit-learn?</h4>
+          <div className="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+            <p className="text-sm text-slate-300 mb-4">
+              MeghNaad strictly adheres to the official <strong>India Meteorological Department (IMD)</strong> standards for the North Indian Ocean. The backend dynamically categorizes the storm based on the maximum sustained wind speed (in knots):
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+              <div className="bg-slate-900 p-3 rounded border border-blue-900"><strong className="text-blue-400">Depression</strong><br/>&lt; 28 knots</div>
+              <div className="bg-slate-900 p-3 rounded border border-cyan-900"><strong className="text-cyan-400">Deep Depression</strong><br/>28 - 33 knots</div>
+              <div className="bg-slate-900 p-3 rounded border border-yellow-900"><strong className="text-yellow-400">Cyclonic Storm</strong><br/>34 - 47 knots</div>
+              <div className="bg-slate-900 p-3 rounded border border-orange-900"><strong className="text-orange-400">Severe Cyclonic Storm</strong><br/>48 - 63 knots</div>
+              <div className="bg-slate-900 p-3 rounded border border-red-900"><strong className="text-red-400">Very Severe Cyclonic Storm</strong><br/>64 - 89 knots</div>
+              <div className="bg-slate-900 p-3 rounded border border-fuchsia-900"><strong className="text-fuchsia-400">Super Cyclonic Storm</strong><br/>&ge; 90 knots</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 5: The Ultimate Defense (Q&A) */}
+        <section className="space-y-6">
+          <h2 className="text-3xl font-black flex items-center gap-3 text-white border-b border-slate-800 pb-4">
+            <ShieldQuestion className="w-8 h-8 text-rose-500" /> 5. The Ultimate Defense (Judge Q&A)
+          </h2>
+          <p className="text-slate-400">Memorize these answers. If a judge tries to poke holes in the project, these are the technically rigorous counter-arguments.</p>
+          
+          <div className="space-y-6">
+            
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q1: Why use Deep Learning instead of traditional physics/NWP models?</h4>
               <p className="text-sm text-slate-300 leading-relaxed">
-                <strong>A:</strong> Scikit-learn is great for tabular data, but our project requires fusing images (INSAT-3D) with sequential grid data (ERA5). PyTorch allows us to build custom architectures like our <span className="text-white font-mono text-xs">MultiModalCycloneNet</span> (a CNN combined with an MLP) and use LSTMs for the temporal track forecasting.
+                <strong>A:</strong> Traditional Numerical Weather Prediction (NWP) models require supercomputers solving complex Navier-Stokes fluid dynamics equations, taking hours to run. Our AI approach is a <em>surrogate model</em>. We train the AI on the historical outputs of the ocean/atmosphere. Once trained, inference (predicting the track) takes milliseconds on a standard GPU. It democratizes advanced forecasting, providing immediate alerts during critical rapid-intensification phases.
               </p>
             </div>
 
-            <div className="bg-slate-900/50 p-5 rounded-xl border border-slate-800">
-              <h4 className="font-bold text-rose-400 mb-2">Q: How do you handle the lack of real-time satellite imagery for the demo?</h4>
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q2: How do you handle missing or corrupt satellite data?</h4>
               <p className="text-sm text-slate-300 leading-relaxed">
-                <strong>A:</strong> Real-time INSAT-3D feeds are extremely heavy and require proprietary ISRO access. To demonstrate our system's capabilities, we use the <strong>IBTrACS</strong> dataset as our telemetry ground truth, and we synthetically generate procedural satellite imagery on the frontend (using HTML5 Canvas) based on the exact wind speed and pressure metrics of the historical storms.
+                <strong>A:</strong> Because our model is <strong>Multimodal</strong>, it is robust against single-point failure. If the INSAT-3D visual feed is obscured or missing, the ERA5 numerical grids (Pressure, SST) and the historical IBTrACS LSTM memory ensure the prediction doesn't fail. The CNN handles imagery, but the MLP and LSTM rely on telemetry.
               </p>
             </div>
 
-            <div className="bg-slate-900/50 p-5 rounded-xl border border-slate-800">
-              <h4 className="font-bold text-rose-400 mb-2">Q: What is the red cone on the map?</h4>
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q3: Are you actually connected to ISRO MOSDAC live right now?</h4>
               <p className="text-sm text-slate-300 leading-relaxed">
-                <strong>A:</strong> It's the <em>Uncertainty Cone</em>. Our LSTM predicts the most likely track (+6h, +12h, +18h, +24h), but atmospheric prediction isn't deterministic. The expanding red circles represent the probabilistic margin of error. As time extends, uncertainty increases, which is standard practice at centers like the IMD and NHC.
+                <strong>A:</strong> We have MOSDAC API access, but for the scope of this hackathon demo, we are running a simulation using historical IBTrACS ground-truth data. Government APIs provide data in massive HDF5 binary files that require offline batch processing. Our production architecture involves a backend Cron job that downloads the HDF5s every 30 minutes, parses the arrays via Python `h5py`, and feeds them into the PyTorch model. For the frontend demo today, we procedurally generate the visual satellite feed based on exact historical telemetry to prove the UI's capability.
               </p>
             </div>
 
-            <div className="bg-slate-900/50 p-5 rounded-xl border border-slate-800">
-              <h4 className="font-bold text-rose-400 mb-2">Q: How is the Model Confidence calculated?</h4>
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q4: Why did you use Deck.gl instead of standard Leaflet or Google Maps?</h4>
               <p className="text-sm text-slate-300 leading-relaxed">
-                <strong>A:</strong> The model generates raw categorical logits. We apply a Softmax function to calculate the mathematical probability. However, to account for real-world atmospheric volatility, we blend this raw neural net confidence with a meteorological heuristic (wind intensity factor). A well-defined 100-knot storm guarantees higher detection confidence than a forming 30-knot depression.
+                <strong>A:</strong> Performance and WebGL rendering. Standard DOM-based mapping libraries (like Leaflet) choke when rendering thousands of data points. Deck.gl leverages the GPU, allowing us to render massive datasets—like the expanding probabilistic Uncertainty Cone, 3D scatter plots, and complex historical tracks—at 60 Frames Per Second smoothly.
               </p>
             </div>
 
-            <div className="bg-slate-900/50 p-5 rounded-xl border border-slate-800">
-              <h4 className="font-bold text-rose-400 mb-2">Q: If a new cyclone occurs tomorrow, can this system get real-time access to track it?</h4>
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q5: What is the "Uncertainty Cone" and how is it calculated mathematically?</h4>
               <p className="text-sm text-slate-300 leading-relaxed">
-                <strong>A:</strong> Yes! We have access to the ISRO MOSDAC API, but government satellite data isn't a simple live web feed. It comes in massive, raw scientific binary files (like HDF5/NetCDF). Our production roadmap involves setting up an automated ingestion pipeline: a backend cron job will ping the MOSDAC API every 30 minutes to download the latest INSAT-3D arrays, our Python backend will parse the HDF5 binary, and then feed those raw arrays directly into our PyTorch MultiModalCycloneNet for immediate inference and frontend visualization.
+                <strong>A:</strong> Forecasting the atmosphere is probabilistic, not deterministic. Our LSTM outputs a specific coordinate track, but the Uncertainty Cone represents the historical margin of error at +6, +12, +18, and +24 hours. The radii of the circles expand linearly over time because the further into the future you predict, the wider the variance of possible landfalls becomes. It prevents disaster agencies from focusing on a single "thin line" and ignoring surrounding danger zones.
               </p>
             </div>
+
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q6: What is XAI (Explainable AI) and why is it necessary?</h4>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                <strong>A:</strong> Neural networks are famously "black boxes." In disaster management, officials won't trust an AI unless they know *why* it made a decision. We implemented XAI using techniques like <strong>Grad-CAM</strong> (Gradient-weighted Class Activation Mapping). It generates a heatmap over the satellite imagery, proving to the meteorologist that the AI correctly identified the cyclone's "eye" or "spiral bands," rather than triggering off a random artifact in the ocean.
+              </p>
+            </div>
+
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q7: How scalable is this? What if 10,000 citizens check the dashboard during a super cyclone?</h4>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                <strong>A:</strong> Highly scalable. The architecture decouples the heavy AI inference from the web serving. The PyTorch model runs on the backend, computes the forecast once every few hours, and caches the JSON result. When 10,000 users load the React dashboard, they are just querying a lightweight, cached JSON file from the FastAPI server, bypassing the expensive PyTorch GPU inference completely.
+              </p>
+            </div>
+
+            <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-700 shadow-lg">
+              <h4 className="font-bold text-rose-400 text-lg mb-2">Q8: How does the model confidence work? Why does it fluctuate?</h4>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                <strong>A:</strong> Our backend calculates confidence dynamically by blending the raw PyTorch Softmax logits with a meteorological heuristic. A loosely formed, 30-knot depression is inherently chaotic and harder to classify, so the model reports ~60-70% confidence. But when a 110-knot Super Cyclone with a massive pressure drop and clear eye forms, the thermodynamic parameters become extremely explicit, pushing the model's confidence to 95%+.
+              </p>
+            </div>
+
           </div>
         </section>
 
